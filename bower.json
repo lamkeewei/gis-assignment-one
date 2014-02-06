@@ -1,0 +1,16 @@
+{
+  "name": "gis-assignment-one",
+  "version": "0.0.0",
+  "authors": [
+    "lamkeewei <keewei.lam.2012@sis.smu.edu.sg>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ]
+}
