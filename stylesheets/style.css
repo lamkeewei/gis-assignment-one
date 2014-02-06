@@ -1,0 +1,65 @@
+body {
+ margin: 0;
+ padding: 0;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#map{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.toggleLayer{
+  width: 150px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 5px;
+  font-size: 85%;
+}
+
+.toggleLayer div{
+  height: 40px;
+  background-color: #fff ;
+  padding: 13px 10px 10px 10px;
+  color: black;
+  box-sizing: border-box;
+  border-bottom: solid 1px gainsboro;
+  text-align: center;
+  line-height: 100%;
+}
+
+.toggle:hover{
+  background-color: #3887BE;
+  color: white;
+  cursor: pointer;
+}
+
+.toggle.active{
+  background-color: #3887BE;
+  color: white;
+}
+
+#header{
+  background-color: rgba(40,53,61,1);
+  color: white;
+  border: none;
+}
+
+#add-layer{
+  color: rgba(0,0,0,.5);
+  background-color: rgba(220, 220, 220, 0.90);
+  /*margin-top: 5px;*/
+  border: none;
+}
+
+#add-layer:hover{
+  background-color: rgba(200, 200, 200, 0.90);
+  cursor: pointer;
+}
+
