@@ -41,35 +41,7 @@ d3.json('education.geojson', function(err, education){
       }
     });
 
-    var censusLayerTwo = L.geoJson(census, {
-      style: {
-        fillColor: 'black',
-        fillOpacity: 1,
-        weight: 2
-      }, 
-      onEachFeature: function(feature, layer){
-        var hightlight = function(e){
-          var layer = e.target;
-          layer.setStyle({
-            fillColor: 'grey'
-          });
-        };
-
-        var unhighlight = function(e){
-          var layer = e.target;
-          layer.setStyle({
-            fillColor: '#a6bddb'
-          });
-        }
-                   
-        layer.on({
-          mouseover: hightlight,
-          mouseout: unhighlight
-        });
-      }
-    });
-
-    var layers = L.layerGroup([censusLayer, markers]);
+    var layers = L.layerGroup([markers]);
 
     var map = L.mapbox.map('map', 'lamkeewei.h6p10hml', {
       zoomControl: false,
@@ -77,10 +49,10 @@ d3.json('education.geojson', function(err, education){
     }).setView([1.3592589261843264, 103.81118774414062], 12);
 
     layers.addTo(map);
+
     var overlays = {
       "School Locations": markers,
-      "Census Layer": censusLayer,
-      "Location": censusLayerTwo
+      "Census Layer": censusLayer
     };
 
     map.addControl(new ToggleControl(layers, overlays, {
@@ -102,8 +74,6 @@ d3.json('education.geojson', function(err, education){
       toAdd.reverse().forEach(function(d, i){
         layers.addLayer(d);
       });
-
-      console.log(layers);
     });
   });
 });
