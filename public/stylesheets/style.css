@@ -16,14 +16,16 @@ a {
 }
 
 .toggleLayer{
+  padding: 0;
+  list-style-type: none;
   width: 150px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
   font-family: 'Roboto', sans-serif;
-  border-radius: 5px;
+  border-radius: 3px;
   font-size: 85%;
 }
 
-.toggleLayer div{
+.toggleLayer li{
   height: 40px;
   background-color: #fff ;
   padding: 13px 10px 10px 10px;
@@ -37,7 +39,7 @@ a {
 .toggle:hover{
   background-color: #3887BE;
   color: white;
-  cursor: pointer;
+  cursor: move;
 }
 
 .toggle.active{
@@ -49,6 +51,7 @@ a {
   background-color: rgba(40,53,61,1);
   color: white;
   border: none;
+  border-radius: 3px 3px 0px 0px;
 }
 
 #add-layer{
