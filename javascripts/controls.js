@@ -31,8 +31,14 @@ var ToggleControl = L.Control.extend({
           layerGrp.removeLayer(controlLayers[layerName]);
           L.DomUtil.removeClass(this, 'active');
         }else{
-          layerGrp.addLayer(controlLayers[layerName]);
           L.DomUtil.addClass(this, 'active');
+          var activeLayers = map.getContainer().querySelectorAll('.toggle.active');
+          layerGrp.clearLayers();
+
+          for (var i = activeLayers.length - 1; i >= 0; i--) {
+            var layerName = activeLayers[i].innerHTML;
+            layerGrp.addLayer(controlLayers[layerName]);
+          };
         }
       });
     }
