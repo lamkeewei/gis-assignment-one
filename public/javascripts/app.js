@@ -8,8 +8,12 @@ var hourMap = ["12am",  "1am",  "2am",  "3am",  "4am",  "5am", "6am",
 var map = L.mapbox.map('map', 'lamkeewei.h6p10hml', {
   zoomControl: false,
   doubleClickZoom: false,
-  scrollWheelZoom: false
+  // scrollWheelZoom: false
 }).setView([42.3546, -71.0915], 14);
+
+L.control.zoom({
+  position: 'bottomright'
+}).addTo(map);
 
 var setupChart = function(){
   var width = $('#usageChart').width();
@@ -313,7 +317,7 @@ d3.json('bus_stations.geojson', function(err, bus){
 
       //Set overlay layers here
       var overlays = {
-        "Stations Locations": stationMarkers,
+        "Bus Stations Locations": stationMarkers,
         "Trips Layer": tripsLayer,
         "Census Layer": censusLayer
       };
