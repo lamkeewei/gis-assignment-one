@@ -54,3 +54,20 @@ var ToggleControl = L.Control.extend({
     return container;
   }
 });
+
+var InfoWindow = L.Control.extend({
+  initialize: function(options){
+    L.Util.setOptions(options);
+  },
+
+  onAdd: function(map){
+    var container = L.DomUtil.create('div', 'infoWindow');
+    var header = L.DomUtil.create('h1', '', container);
+    header.innerHTML = 'Info Window';
+    header.setAttribute('id', 'info-title');
+
+    var chart = L.DomUtil.create('div', '', container);
+    chart.setAttribute('id', 'usageChart');
+    return container;
+  }
+});
