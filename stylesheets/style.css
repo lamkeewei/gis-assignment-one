@@ -18,7 +18,7 @@ a {
 .toggleLayer{
   padding: 0;
   list-style-type: none;
-  width: 150px;
+  width: 200px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
   font-family: 'Roboto', sans-serif;
   border-radius: 3px;
@@ -34,35 +34,69 @@ a {
   border-bottom: solid 1px gainsboro;
   text-align: center;
   line-height: 100%;
+  border: solid #fff 1px;
 }
 
 .toggle:hover{
-  background-color: #3887BE;
-  color: white;
+  border-color: #3887BE;
+  color: #007AFF;
   cursor: move;
 }
 
 .toggle.active{
   background-color: #3887BE;
+  border-color: #3887BE;
   color: white;
 }
 
 #header{
   background-color: rgba(40,53,61,1);
   color: white;
-  border: none;
+  border-color: rgba(40,53,61,1);
   border-radius: 3px 3px 0px 0px;
 }
 
 #add-layer{
   color: rgba(0,0,0,.5);
   background-color: rgba(220, 220, 220, 0.90);
+  border-color: rgba(220, 220, 220, 0.90);
   /*margin-top: 5px;*/
-  border: none;
 }
 
 #add-layer:hover{
   background-color: rgba(200, 200, 200, 0.90);
+  border-color: rgba(200, 200, 200, 0.90);
   cursor: pointer;
 }
 
+.infoWindow {
+  /*display: none;*/
+  padding: 10px 15px;
+  background-color: #fff;
+  width: 300px;
+  height: 400px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+}
+
+#usageChart {
+  height: 100%;
+}
+
+.legend-title{
+  font-size: 80%;
+}
+
+.line{
+  fill: black;
+  stroke-width: 4px;
+}
+
+.line.arrivals{
+  stroke: #2c826b;
+}
+
+.line.departures{
+  stroke: #df6342;
+}
