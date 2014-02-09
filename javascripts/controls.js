@@ -11,7 +11,7 @@ var ToggleControl = L.Control.extend({
     var container = L.DomUtil.create('ul', 'toggleLayer sortable');
     var header = L.DomUtil.create('li', 'disabled', container);
     header.setAttribute('id', 'header');
-    header.innerHTML = 'LAYER TOGGLE';
+    header.innerHTML = 'LAYER CONTROLS';
 
     var targetLayer;
     var context = L.DomUtil.create('div', 'contextMenu', map.getContainer());
@@ -20,12 +20,16 @@ var ToggleControl = L.Control.extend({
 
     L.DomEvent.on(option, 'click', function(e){
       var layer = controlLayers[targetLayer];
-      // console.log(layer.getBounds());
       map.fitBounds(layer.getBounds());
+      context.style.display = 'none';
     });
 
-    var optionTwo = L.DomUtil.create('div', '', context);
-    optionTwo.innerHTML = '<i class="fa fa-cog"></i> Settings';
+    var cancel = L.DomUtil.create('div', '', context);
+    cancel.innerHTML = 'Cancel';
+
+    L.DomEvent.on(cancel, 'click', function(e){
+      context.style.display = 'none';
+    });
 
     for(var key in controlLayers){
       var layer = L.DomUtil.create('li', 'toggle', container);
@@ -55,17 +59,14 @@ var ToggleControl = L.Control.extend({
           };
         }
       });
-      
+
       L.DomEvent.on(layer, 'contextmenu', function(e){
         e.preventDefault();
+
         targetLayer = this.innerHTML;
         context.style.display = 'block';
         context.style.top = e.pageY + 'px';
         context.style.left = e.pageX + 'px';
-
-        L.DomEvent.on(map.getContainer(), 'click', function(){
-          context.style.display = 'none';
-        })
       });
     }
 
