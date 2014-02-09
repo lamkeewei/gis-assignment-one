@@ -73,8 +73,8 @@ a {
   /*display: none;*/
   padding: 10px 15px;
   background-color: #fff;
-  width: 300px;
-  height: 400px;
+  width: 350px;
+  height: 450px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
   font-family: 'Roboto', sans-serif;
   border-radius: 3px;
@@ -97,6 +97,33 @@ a {
   stroke: #2c826b;
 }
 
+path.line{
+  fill: none;
+}
+
 .line.departures{
   stroke: #df6342;
+}
+
+.area{
+  opacity: 0.15;
+}
+
+.area.arrivals {
+  fill: #2c826b;
+}
+
+.area.departures {
+  fill: #df6342;
+}
+
+#usageChart .axis{
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+#usageChart .axis text{
+  font-family: 'Roboto' sans-serif;
+  font-size: 11px;
 }

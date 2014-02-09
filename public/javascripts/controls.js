@@ -63,7 +63,7 @@ var InfoWindow = L.Control.extend({
   onAdd: function(map){
     var container = L.DomUtil.create('div', 'infoWindow');
     var header = L.DomUtil.create('h1', '', container);
-    header.innerHTML = 'Info Window';
+    header.innerHTML = 'Usage By Hour';
     header.setAttribute('id', 'info-title');
 
     var chart = L.DomUtil.create('div', '', container);
