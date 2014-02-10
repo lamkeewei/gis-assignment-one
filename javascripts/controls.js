@@ -142,9 +142,9 @@ var ChloroControl = L.Control.extend({
     //Hack job!!!
     var count = 0;
     for(var v in variables){
-      if(count > 14){
+      if(count > 15){
         var opt = L.DomUtil.create('option', '', select);
-        opt.innerHTML = v;
+        opt.innerHTML = labels[count - 16];
         opt.value = v;
 
         if(v === "population_by_gender_age_10ct_totpop10"){
