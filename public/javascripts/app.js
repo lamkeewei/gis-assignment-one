@@ -24,9 +24,7 @@ var map = L.mapbox.map('map', 'lamkeewei.h6p10hml', {
   // scrollWheelZoom: false
 }).setView([42.3546, -71.0915], 14);
 
-L.control.zoom({
-  position: 'bottomright'
-}).addTo(map);
+
 
 var setupChart = function(){
   var width = $('#usageChart').width();
@@ -209,7 +207,6 @@ d3.json('tracks.geojson', function(err, tracks){
         });
 
         categories = _.compact(_.uniq(categories));
-        console.log(categories);
 
         var categoryColors = d3.scale
             .category10()
@@ -226,7 +223,7 @@ d3.json('tracks.geojson', function(err, tracks){
         });
 
         var stationsLayer = L.geoJson(bus, {
-          pointToLayer: function(feature, latLng){          
+          pointToLayer: function(feature, latLng){
             var color = feature.properties.line;
             color = color.toLowerCase();
 
@@ -236,7 +233,16 @@ d3.json('tracks.geojson', function(err, tracks){
               markerColor: color
             });
 
-            return L.marker(latLng, {icon: stationStyle});
+            var stationName = feature.properties.station.toLowerCase();
+            var fmtName = '';
+            stationName.split(' ').forEach(function(word, i){
+              fmtName += word.charAt(0).toUpperCase();
+              fmtName += word.substring(1) + ' ';
+            });
+
+            return L.marker(latLng, {icon: stationStyle}).bindPopup(fmtName.trim(), {
+              closeButton: false
+            });
           }
         });
 
@@ -381,6 +387,14 @@ d3.json('tracks.geojson', function(err, tracks){
         map.addControl(new DetailMap({
           position: 'topright'
         }));
+
+        L.control.zoom({
+          position: 'bottomright'
+        }).addTo(map);
+
+        // L.control.pan({
+        //   position: 'bottomleft'
+        // }).addTo(map);
 
         var minimap = L.mapbox.map('minimap', 'lamkeewei.h6p10hml', {
           zoomControl: false,

@@ -211,10 +211,6 @@ path.line{
   width: 100%;
 }
 
-#detailMap .mapbox-control-info{
-  display: none;
-}
-
 #loadingOverlay {
   position: absolute;
   top: 0;
