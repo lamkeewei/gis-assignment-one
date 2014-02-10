@@ -191,3 +191,26 @@ path.line{
 .chloroControl .form-control{
   margin-bottom: 5px;
 }
+
+#detailMap {
+  padding: 0;
+  list-style-type: none;
+  width: 250px;
+  height: 250px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+  font-size: 85%;
+  border: solid black 1px;
+}
+
+#detailMap #minimap{
+  border-radius: 3px;
+  background-color: white;
+  height: 100%;
+  width: 100%;
+}
+
+#detailMap .mapbox-control-info{
+  display: none;
+}

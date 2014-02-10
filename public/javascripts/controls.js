@@ -18,6 +18,10 @@ var ToggleControl = L.Control.extend({
     var option = L.DomUtil.create('div', '', context);
     option.innerHTML = '<i class="fa fa-search-plus"></i> Zoom to layer';
 
+    map.on('click', function(e){
+      context.style.display = 'none';
+    })
+
     L.DomEvent.on(option, 'click', function(e){
       var layer = controlLayers[targetLayer];
       map.fitBounds(layer.getBounds());
@@ -44,6 +48,7 @@ var ToggleControl = L.Control.extend({
       L.DomEvent.disableClickPropagation(layer);
       
       L.DomEvent.on(layer, 'click', function(e){
+        context.style.display = 'none';
         var layerName = this.innerHTML;
         if(layerGrp.hasLayer(controlLayers[layerName])){
           layerGrp.removeLayer(controlLayers[layerName]);
@@ -255,6 +260,22 @@ var ChloroControl = L.Control.extend({
     });
 
     container.style.display = 'none';
+    return container;
+  }
+});
+
+var DetailMap = L.Control.extend({
+  intialize: function(options){
+    L.Util.setOptions(this, options);
+  },
+
+  onAdd: function(map){
+    var container = L.DomUtil.create('div', '');
+    container.setAttribute('id', 'detailMap');
+
+    var mapArea = L.DomUtil.create('div', '', container);
+    mapArea.setAttribute('id', 'minimap');
+
     return container;
   }
 });
