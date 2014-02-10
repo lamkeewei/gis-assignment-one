@@ -319,8 +319,8 @@ d3.json('bus_stations.geojson', function(err, bus){
             weight: 2,
             color: color
           }).on({
-            mouseover: showInfoWindow,
-            mouseout: hideInfoWindow
+            // mouseover: showInfoWindow,
+            // mouseout: hideInfoWindow
           });
         }
       });
@@ -352,6 +352,44 @@ d3.json('bus_stations.geojson', function(err, bus){
         items: ':not(.disabled)'
       }).bind('sortupdate', function(e, ui){
         refreshOrder(layers, overlays);
+      });
+
+      map.addControl(new DetailMap({
+        position: 'topright'
+      }));
+
+      var minimap = L.mapbox.map('minimap', 'lamkeewei.h6p10hml', {
+        zoomControl: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        attributionControl: false,
+        zoomControl: false,
+        boxZoom: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        dragging: false,
+        keyboard: false,
+        legendControl: false
+      }).setView([42.3546, -71.0915], 17);
+
+      var miniStations = L.geoJson(stations, {
+        pointToLayer: function(feature, latLng){          
+          var stationStyle = L.AwesomeMarkers.icon({
+            prefix: 'fa',
+            icon: 'home',
+            markerColor: 'cadetblue'
+          });
+
+          return L.marker(latLng, {icon: stationStyle});
+        }
+      });
+      minimap.addLayer(miniStations);
+
+      L.DomEvent.on(map, 'mousemove', function(e){
+        minimap.setView(e.latlng, 17, {
+          pan: {animate: false}
+        });
       });
     });
   });
