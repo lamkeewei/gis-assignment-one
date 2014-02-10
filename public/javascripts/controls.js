@@ -184,9 +184,21 @@ var ChloroControl = L.Control.extend({
       }
     }
 
+    var label = L.DomUtil.create('label', 'control-label', selectorContainer);
+    label.innerHTML = 'No. of Classes: ';
+    var classPicker = L.DomUtil.create('select', 'form-control', selectorContainer);
+    for(var i = 3; i <= 9; i++){
+      var opt = L.DomUtil.create('option', '', classPicker);
+      opt.innerHTML = i;
+      opt.value = i;
+      if(i == 4){
+        opt.selected = true;
+      }
+    }
+
     L.DomEvent.on(colorPicker, 'change', function(e){
       var type = e.target.value;
-      var colorScheme = colorbrewer[type][5];
+      var colorScheme = colorbrewer[type][classPicker.value];
       var targetVal = select.value;
 
       var targetData = _.map(data.features, function(d){
@@ -195,7 +207,7 @@ var ChloroControl = L.Control.extend({
 
       var color = d3.scale.quantize()
                       .domain(targetData)
-                      .range(colorbrewer[type][4]);
+                      .range(colorScheme);
 
       layer.setStyle(function(feature){
         var population = feature.properties[targetVal];
@@ -208,6 +220,32 @@ var ChloroControl = L.Control.extend({
         }; 
       }); 
     });
+
+    L.DomEvent.on(classPicker, 'change', function(e){
+      var classNum = e.target.value;
+      var colorScheme = colorbrewer[colorPicker.value][classNum];
+      var targetVal = select.value;
+
+      var targetData = _.map(data.features, function(d){
+        return d.properties[targetVal];
+      });
+
+      var color = d3.scale.quantize()
+                      .domain(targetData)
+                      .range(colorScheme);
+
+      layer.setStyle(function(feature){
+        var population = feature.properties[targetVal];
+
+        return {
+          fillColor: color(population),
+          color: 'grey',
+          fillOpacity: 0.5,
+          weight: 1
+        }; 
+      });
+    });
+
     return container;
   }
 });

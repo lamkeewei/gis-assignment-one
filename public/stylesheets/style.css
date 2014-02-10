@@ -187,3 +187,7 @@ path.line{
 .chloroControl .control-label{
   text-align: left;
 }
+
+.chloroControl .form-control{
+  margin-bottom: 5px;
+}
