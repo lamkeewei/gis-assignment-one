@@ -154,30 +154,6 @@ var ChloroControl = L.Control.extend({
       count++;
     }
 
-    L.DomEvent.on(select, 'change', function(e){
-      var targetVal = e.target.value;
-      var targetData = _.map(data.features, function(d){
-        return d.properties[targetVal];
-      });
-
-      var color = d3.scale.quantize()
-                      .domain(targetData)
-                      .range(colorbrewer.GnBu[4]);
-
-      if(layerGrp.hasLayer(layer)){
-        layer.setStyle(function(feature){
-          var population = feature.properties[targetVal];
-
-            return {
-              fillColor: color(population),
-              color: 'grey',
-              fillOpacity: 0.5,
-              weight: 1
-            };
-        });
-      }
-    });
-
     var label = L.DomUtil.create('label', 'control-label', selectorContainer);
     label.innerHTML = 'Color scale: ';
     var colorPicker = L.DomUtil.create('select', 'form-control', selectorContainer);
@@ -203,6 +179,30 @@ var ChloroControl = L.Control.extend({
         opt.selected = true;
       }
     }
+
+    L.DomEvent.on(select, 'change', function(e){
+      var targetVal = e.target.value;
+      var targetData = _.map(data.features, function(d){
+        return d.properties[targetVal];
+      });
+
+      var color = d3.scale.quantize()
+                      .domain(targetData)
+                      .range(colorbrewer[colorPicker.value][classPicker.value]);
+
+      if(layerGrp.hasLayer(layer)){
+        layer.setStyle(function(feature){
+          var population = feature.properties[targetVal];
+
+            return {
+              fillColor: color(population),
+              color: 'grey',
+              fillOpacity: 0.5,
+              weight: 1
+            };
+        });
+      }
+    });
 
     L.DomEvent.on(colorPicker, 'change', function(e){
       var type = e.target.value;
