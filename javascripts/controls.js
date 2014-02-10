@@ -138,6 +138,10 @@ var ChloroControl = L.Control.extend({
         var opt = L.DomUtil.create('option', '', select);
         opt.innerHTML = v;
         opt.value = v;
+
+        if(v === "population_by_gender_age_10ct_totpop10"){
+          opt.selected = true;
+        }
       }
       count++;
     }
@@ -153,41 +157,57 @@ var ChloroControl = L.Control.extend({
                       .range(colorbrewer.GnBu[4]);
 
       if(layerGrp.hasLayer(layer)){
-        layerGrp.removeLayer(layer);
-      
-        var censusLayer = L.geoJson(data, {
-          style: function(feature){
-            var population = feature.properties[targetVal];
-            // var color = population > 5672 ? '#045a8d' :
-            //    population > 4193 ? '#2b8cbe' :
-            //    population > 2907 ? '#74a9cf' :
-            //    population > 1210 ? '#bdc9e1' :
-            //               '#f1eef6';
+        layer.setStyle(function(feature){
+          var population = feature.properties[targetVal];
 
             return {
               fillColor: color(population),
               color: 'grey',
               fillOpacity: 0.5,
               weight: 1
-            }; 
-          }
+            };
         });
-
-        overlays['Census Layer'] = censusLayer;
-        layerGrp.addLayer(censusLayer);
-        refreshOrder(layerGrp, overlays);
-        layer = censusLayer;
       }
-
     });
 
     var label = L.DomUtil.create('label', 'control-label', selectorContainer);
     label.innerHTML = 'Color scale: ';
-    var select = L.DomUtil.create('select', 'form-control', selectorContainer);
-    for(var i = 0; i< 10; i++){
-      var opt = L.DomUtil.create('option', '', select);
-      opt.innerHTML = 'Var ' + (i + 1);
+    var colorPicker = L.DomUtil.create('select', 'form-control', selectorContainer);
+
+    for(var colorScheme in colorbrewer){
+      var opt = L.DomUtil.create('option', '', colorPicker);
+      opt.innerHTML = colorScheme;
+      opt.value = colorScheme;
+
+      if(colorScheme === 'GnBu'){
+        opt.selected = true;
+      }
     }
+
+    L.DomEvent.on(colorPicker, 'change', function(e){
+      var type = e.target.value;
+      var colorScheme = colorbrewer[type][5];
+      var targetVal = select.value;
+
+      var targetData = _.map(data.features, function(d){
+        return d.properties[targetVal];
+      });
+
+      var color = d3.scale.quantize()
+                      .domain(targetData)
+                      .range(colorbrewer[type][4]);
+
+      layer.setStyle(function(feature){
+        var population = feature.properties[targetVal];
+
+      return {
+          fillColor: color(population),
+          color: 'grey',
+          fillOpacity: 0.5,
+          weight: 1
+        }; 
+      }); 
+    });
     return container;
   }
 });
