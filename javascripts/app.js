@@ -1,3 +1,16 @@
+var refreshOrder = function(layers, overlays){
+  layers.clearLayers();
+  var toAdd = [];
+
+  $('.toggle.active').each(function(i, d){
+    var key = d.innerHTML;
+    toAdd.push(overlays[key]);
+  });
+
+  toAdd.reverse().forEach(function(d, i){
+    layers.addLayer(d);
+  });
+}
 
 var hourMap = ["12am",  "1am",  "2am",  "3am",  "4am",  "5am", "6am",
                "7am",  "8am",  "9am",  "10am", "11am",
@@ -216,18 +229,20 @@ d3.json('bus_stations.geojson', function(err, bus){
 
       stationMarkers.addLayer(stationsLayer);
 
+      var initialData = _.map(census.features, function(d){
+        return d.properties['population_by_gender_age_10ct_totpop10'];
+      });
+
+      var color = d3.scale.quantize().
+            domain(initialData).
+            range(colorbrewer.GnBu[4]);
+
       var censusLayer = L.geoJson(census, {
         style: function(feature){
           var population = feature.properties.population_by_gender_age_10ct_totpop10;
 
-          var color = population > 5672 ? '#045a8d' :
-             population > 4193 ? '#2b8cbe' :
-             population > 2907 ? '#74a9cf' :
-             population > 1210 ? '#bdc9e1' :
-                        '#f1eef6';
-
           return {
-            fillColor: color,
+            fillColor: color(population),
             color: 'grey',
             fillOpacity: 0.5,
             weight: 1
@@ -311,7 +326,7 @@ d3.json('bus_stations.geojson', function(err, bus){
       });
 
       //Set existing layers here
-      var layers = L.layerGroup([censusLayer, tripsLayer]);
+      var layers = L.layerGroup([tripsLayer]);
 
       layers.addTo(map);
 
@@ -322,25 +337,21 @@ d3.json('bus_stations.geojson', function(err, bus){
         "Census Layer": censusLayer
       };
 
-      map.addControl(new ToggleControl(layers, overlays, {
+      var toggleControl = new ToggleControl(layers, overlays, {
         position: 'topleft'
-      }));
+      });
+
+      map.addControl(toggleControl);
+
+      map.addControl(new ChloroControl({
+        position: 'topleft'
+      }, censusLayer, layers, census, refreshOrder, overlays, toggleControl));
 
       var sortable = map.getContainer().querySelector('.sortable');
       $(sortable).sortable({
         items: ':not(.disabled)'
       }).bind('sortupdate', function(e, ui){
-        layers.clearLayers();
-        var toAdd = [];
-
-        $('.toggle.active').each(function(i, d){
-          var key = d.innerHTML;
-          toAdd.push(overlays[key]);
-        });
-
-        toAdd.reverse().forEach(function(d, i){
-          layers.addLayer(d);
-        });
+        refreshOrder(layers, overlays);
       });
     });
   });

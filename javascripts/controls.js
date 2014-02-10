@@ -84,7 +84,7 @@ var ToggleControl = L.Control.extend({
 
 var InfoWindow = L.Control.extend({
   initialize: function(options){
-    L.Util.setOptions(options);
+    L.Util.setOptions(this, options);
   },
 
   onAdd: function(map){
@@ -95,6 +95,99 @@ var InfoWindow = L.Control.extend({
 
     var chart = L.DomUtil.create('div', '', container);
     chart.setAttribute('id', 'usageChart');
+    return container;
+  }
+});
+
+var ChloroControl = L.Control.extend({
+  initialize: function(options, layer, layerGrp, data, refreshOrder, overlays, toggleControl){
+    this.layer = layer;
+    this.layerGrp = layerGrp;
+    this.data = data;
+    this.overlays = overlays;
+    this.refreshOrder = refreshOrder;
+    this.toggleControl = toggleControl;
+    L.Util.setOptions(this, options);
+  },
+
+  onAdd: function(map){
+    var layer = this.layer;
+    var layerGrp = this.layerGrp;
+    var data = this.data;
+    var refreshOrder = this.refreshOrder;
+    var overlays = this.overlays;
+    var toggleControl = this.toggleControl;
+
+    var variables = this.data.features[0].properties;
+    var container = L.DomUtil.create('div', 'chloroControl');
+    var header = L.DomUtil.create('div', '', container);
+    header.innerHTML = 'Census Layer Control'.toUpperCase();
+    header.setAttribute('id', 'header');
+
+    L.DomEvent.disableClickPropagation(container);
+
+    var selectorContainer = L.DomUtil.create('div', '', container);
+    var label = L.DomUtil.create('label', 'control-label', selectorContainer);
+    label.innerHTML = 'Select variable: ';
+    var select = L.DomUtil.create('select', 'form-control', selectorContainer);
+
+    //Hack job!!!
+    var count = 0;
+    for(var v in variables){
+      if(count > 14){
+        var opt = L.DomUtil.create('option', '', select);
+        opt.innerHTML = v;
+        opt.value = v;
+      }
+      count++;
+    }
+
+    L.DomEvent.on(select, 'change', function(e){
+      var targetVal = e.target.value;
+      var targetData = _.map(data.features, function(d){
+        return d.properties[targetVal];
+      });
+
+      var color = d3.scale.quantize()
+                      .domain(targetData)
+                      .range(colorbrewer.GnBu[4]);
+
+      if(layerGrp.hasLayer(layer)){
+        layerGrp.removeLayer(layer);
+      
+        var censusLayer = L.geoJson(data, {
+          style: function(feature){
+            var population = feature.properties[targetVal];
+            // var color = population > 5672 ? '#045a8d' :
+            //    population > 4193 ? '#2b8cbe' :
+            //    population > 2907 ? '#74a9cf' :
+            //    population > 1210 ? '#bdc9e1' :
+            //               '#f1eef6';
+
+            return {
+              fillColor: color(population),
+              color: 'grey',
+              fillOpacity: 0.5,
+              weight: 1
+            }; 
+          }
+        });
+
+        overlays['Census Layer'] = censusLayer;
+        layerGrp.addLayer(censusLayer);
+        refreshOrder(layerGrp, overlays);
+        layer = censusLayer;
+      }
+
+    });
+
+    var label = L.DomUtil.create('label', 'control-label', selectorContainer);
+    label.innerHTML = 'Color scale: ';
+    var select = L.DomUtil.create('select', 'form-control', selectorContainer);
+    for(var i = 0; i< 10; i++){
+      var opt = L.DomUtil.create('option', '', select);
+      opt.innerHTML = 'Var ' + (i + 1);
+    }
     return container;
   }
 });

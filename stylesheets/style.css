@@ -157,3 +157,33 @@ path.line{
   height: 100%;
   z-index: 9998;
 }
+
+.chloroControl{
+  padding: 0;
+  list-style-type: none;
+  width: 200px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+  font-size: 85%;
+}
+
+.chloroControl #header{
+  text-align: center;
+  height: 40px;
+}
+
+.chloroControl div{
+  height: 100%;
+  background-color: #fff ;
+  padding: 13px 10px 10px 10px;
+  color: black;
+  box-sizing: border-box;
+  border-bottom: solid 1px gainsboro;
+  line-height: 100%;
+  border: solid #fff 1px;
+}
+
+.chloroControl .control-label{
+  text-align: left;
+}
