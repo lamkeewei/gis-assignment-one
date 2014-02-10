@@ -48,6 +48,9 @@ var ToggleControl = L.Control.extend({
         if(layerGrp.hasLayer(controlLayers[layerName])){
           layerGrp.removeLayer(controlLayers[layerName]);
           L.DomUtil.removeClass(this, 'active');
+          if(layerName === 'Census Layer'){
+            map.getContainer().querySelector('#chloro-control').style.display = 'none';
+          }
         }else{
           L.DomUtil.addClass(this, 'active');
           var activeLayers = map.getContainer().querySelectorAll('.toggle.active');
@@ -57,6 +60,10 @@ var ToggleControl = L.Control.extend({
             var layerName = activeLayers[i].innerHTML;
             layerGrp.addLayer(controlLayers[layerName]);
           };
+          
+          if(this.innerHTML === 'Census Layer'){
+            map.getContainer().querySelector('#chloro-control').style.display = 'block';
+          }
         }
       });
 
@@ -120,6 +127,7 @@ var ChloroControl = L.Control.extend({
 
     var variables = this.data.features[0].properties;
     var container = L.DomUtil.create('div', 'chloroControl');
+    container.setAttribute('id', 'chloro-control');
     var header = L.DomUtil.create('div', '', container);
     header.innerHTML = 'Census Layer Control'.toUpperCase();
     header.setAttribute('id', 'header');
@@ -246,6 +254,7 @@ var ChloroControl = L.Control.extend({
       });
     });
 
+    container.style.display = 'none';
     return container;
   }
 });
