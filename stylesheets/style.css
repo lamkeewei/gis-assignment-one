@@ -243,4 +243,54 @@ path.line{
   border-radius: 3px;
   font-size: 70%;
   background-color: rgba(15,15,15,.6);
+  float: left;
+  margin-left: 3px;
+}
+
+#zoomControls {
+  text-align: center;
+  color: white;
+  list-style-type: none;
+  width: 70px;
+  height: 30px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+  font-size: 70%;
+  background-color: rgba(15,15,15,.6);
+  float: left;
+  font-size: 120%;
+}
+
+#zoomControls .zoomIn{
+  padding-top: 1px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35px;
+  height: 30px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+#zoomControls .zoomOut{
+  padding-top: 1px;
+  position: absolute;
+  top: 0;
+  left: 35px;
+  width: 35px;
+  height: 30px;
+  font-size: 140%;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px
+}
+
+#zoomControls .zoomIn:hover{
+  cursor: pointer;
+  background-color: rgba(15,15,15,.3);
+}
+
+#zoomControls .zoomOut:hover{
+  cursor: pointer;
+  background-color: rgba(15,15,15,.3);
 }

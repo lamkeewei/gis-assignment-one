@@ -392,12 +392,7 @@ d3.json('tracks.geojson', function(err, tracks){
           position: 'topright'
         }));
 
-        L.control.zoom({
-          position: 'bottomright'
-        }).addTo(map);
-
-
-        map.addControl(new LatLngViewer({
+        map.addControl(new NavControls({
           position: 'bottomleft'
         }));
 
