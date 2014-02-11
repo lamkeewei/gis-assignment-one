@@ -262,6 +262,10 @@ d3.json('tracks.geojson', function(err, tracks){
           return d.properties['population_by_gender_age_10ct_totpop10'];
         });
 
+        initialData = _.sortBy(initialData, function(d){
+          return d;
+        });
+
         var color = d3.scale.quantize().
               domain(initialData).
               range(colorbrewer.GnBu[4]);

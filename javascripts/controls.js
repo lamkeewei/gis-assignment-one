@@ -191,6 +191,10 @@ var ChloroControl = L.Control.extend({
         return d.properties[targetVal];
       });
 
+      targetData = _.sortBy(targetData, function(d){
+        return d;
+      });
+
       var color = d3.scale.quantize()
                       .domain(targetData)
                       .range(colorbrewer[colorPicker.value][classPicker.value]);
