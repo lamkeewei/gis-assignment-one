@@ -80,6 +80,13 @@ var ToggleControl = L.Control.extend({
             map.getContainer().querySelector('#tripsLegend').style.display = 'block';
           }
         }
+
+        var active = $('.toggle.active');
+        if(active.length > 0){
+          map.getContainer().querySelector('#legendControl').style.display = 'block';
+        } else {
+          map.getContainer().querySelector('#legendControl').style.display = 'none';
+        }
       });
 
       L.DomEvent.on(layer, 'contextmenu', function(e){
@@ -340,6 +347,15 @@ var NavControls = L.Control.extend({
     var center = map.getCenter();
     latLngViewer.innerHTML = 'Position: (' + center.lat + ', ' + center.lng + ')';
 
+    map.on('mousemove', function(e){
+      var center = e.latlng;
+      var container = map.getContainer().querySelector('#latLngViewer');
+      var lat = parseFloat(center.lat);
+
+      var lng = parseFloat(center.lng);
+      container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
+    });
+    
     return container;
   }
 });
