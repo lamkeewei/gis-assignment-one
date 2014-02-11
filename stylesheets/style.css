@@ -229,3 +229,18 @@ path.line{
   margin-top: -50px;
   margin-left: -140px;
 }
+
+#latLngViewer {
+  text-align: center;
+  padding: 5px 10px;
+  color: white;
+  line-height: 170%;
+  list-style-type: none;
+  width: 160px;
+  height: 30px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+  font-size: 70%;
+  background-color: rgba(15,15,15,.6);
+}

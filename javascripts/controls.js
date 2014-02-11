@@ -222,6 +222,10 @@ var ChloroControl = L.Control.extend({
         return d.properties[targetVal];
       });
 
+      targetData = _.sortBy(targetData, function(d){
+        return d;
+      });
+
       var color = d3.scale.quantize()
                       .domain(targetData)
                       .range(colorScheme);
@@ -245,6 +249,10 @@ var ChloroControl = L.Control.extend({
 
       var targetData = _.map(data.features, function(d){
         return d.properties[targetVal];
+      });
+
+      targetData = _.sortBy(targetData, function(d){
+        return d;
       });
 
       var color = d3.scale.quantize()
@@ -280,6 +288,21 @@ var DetailMap = L.Control.extend({
     var mapArea = L.DomUtil.create('div', '', container);
     mapArea.setAttribute('id', 'minimap');
 
+    return container;
+  }
+});
+
+var LatLngViewer = L.Control.extend({
+  initialize: function(options){
+    L.Util.setOptions(this, options);
+  },
+
+  onAdd: function(map){
+    var container = L.DomUtil.create('div', '');
+    container.setAttribute('id', 'latLngViewer');
+    var center = map.getCenter();
+    console.log(center);
+    container.innerHTML = 'Position: (' + center.lat + ', ' + center.lng + ')';
     return container;
   }
 });

@@ -396,6 +396,11 @@ d3.json('tracks.geojson', function(err, tracks){
           position: 'bottomright'
         }).addTo(map);
 
+
+        map.addControl(new LatLngViewer({
+          position: 'bottomleft'
+        }));
+
         // L.control.pan({
         //   position: 'bottomleft'
         // }).addTo(map);
@@ -429,6 +434,13 @@ d3.json('tracks.geojson', function(err, tracks){
         minimap.addLayer(miniStations);
 
         L.DomEvent.on(map, 'mousemove', function(e){
+          var center = e.latlng;
+          var container = map.getContainer().querySelector('#latLngViewer');
+          var lat = parseFloat(center.lat);
+
+          var lng = parseFloat(center.lng);
+
+          container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
           minimap.setView(e.latlng, 17, {
             pan: {animate: false}
           });
