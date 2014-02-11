@@ -284,12 +284,14 @@ queue()
     }
   });
 
-  map.addControl(new InfoWindow({
-    position: 'topright'
-  }));
+  var infoWindow = new InfoWindow(map.getCenter());
+  map.addLayer(infoWindow);
+  // map.addControl(new InfoWindow({
+  //   position: 'topright'
+  // }));
 
   var chart = setupChart();
-  map.getContainer().querySelector('.infoWindow').style.display = 'none';
+  // map.getContainer().querySelector('.infoWindow').style.display = 'none';
 
   var tripsLayer = L.geoJson(stations, {
     pointToLayer: function(feature, latLng){
@@ -319,7 +321,7 @@ queue()
       } else {
         color = '#df6342';
       }
-
+      
       var showInfoWindow = function(e){
         var marker = e.target;
         var id = marker.feature.properties.ID;
@@ -328,10 +330,10 @@ queue()
           weight: 4
         });
 
-        var infoWindow = map.getContainer().querySelector('.infoWindow');
+        var info = map.getContainer().querySelector('.infoWindow');
         var header = map.getContainer().querySelector('.infoWindow h1');
         header.innerHTML = marker.feature.properties.NAME;
-        infoWindow.style.display = 'block';
+        info.style.display = 'block';
         bindDataToChart(chart, id);
       }
 
@@ -345,16 +347,31 @@ queue()
         var infoWindow = map.getContainer().querySelector('.infoWindow');
         infoWindow.style.display = 'none';
       }
-
+      
+      var html = $('.infoWindow').html();
+      
       return L.circleMarker(latLng, {
         radius: Math.sqrt(size) * 1.7,
         fillColor: color,
         fillOpacity: 0.55,
         weight: 2,
         color: color
-      }).on({
-        // mouseover: showInfoWindow,
-        // mouseout: hideInfoWindow
+      }).on('click', function(e){
+        var marker = e.target;
+        var id = marker.feature.properties.ID;
+        var info = map.getContainer().querySelector('.infoWindow');
+        var header = map.getContainer().querySelector('.infoWindow h1');
+        header.innerHTML = marker.feature.properties.NAME;
+        info.style.display = 'block';
+        bindDataToChart(chart, id);
+
+        var html = $('.infoWindow').html();
+        marker.bindPopup(html, {
+          maxWidth: 250,
+          minWidth: 250,
+          maxHeight: 355,
+          closeButton: false
+        }).openPopup();
       });
     }
   });
@@ -439,13 +456,6 @@ queue()
   minimap.addLayer(miniStations);
 
   L.DomEvent.on(map, 'mousemove', function(e){
-    var center = e.latlng;
-    var container = map.getContainer().querySelector('#latLngViewer');
-    var lat = parseFloat(center.lat);
-
-    var lng = parseFloat(center.lng);
-
-    container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
     minimap.setView(e.latlng, 17, {
       pan: {animate: false}
     });
