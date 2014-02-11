@@ -111,20 +111,28 @@ var ToggleControl = L.Control.extend({
   }
 });
 
-var InfoWindow = L.Control.extend({
-  initialize: function(options){
-    L.Util.setOptions(this, options);
+var InfoWindow = L.Class.extend({
+  initialize: function(latlng){
+    this._latlng = latlng;
+  },
+
+  setPos: function(latlng){
+    var pos = this._map.latLngToLayerPoint(latlng);
+    L.DomUtil.setPosition(this._container, pos);
   },
 
   onAdd: function(map){
-    var container = L.DomUtil.create('div', 'infoWindow');
-    var header = L.DomUtil.create('h1', '', container);
+    this._map = map;
+
+    this._container = L.DomUtil.create('div', 'infoWindow');
+    var header = L.DomUtil.create('h1', '', this._container);
     header.innerHTML = 'Usage By Hour';
     header.setAttribute('id', 'info-title');
 
-    var chart = L.DomUtil.create('div', '', container);
+    var chart = L.DomUtil.create('div', '', this._container);
     chart.setAttribute('id', 'usageChart');
-    return container;
+    
+    map.getPanes().mapPane.appendChild(this._container);
   }
 });
 
@@ -355,7 +363,7 @@ var NavControls = L.Control.extend({
       var lng = parseFloat(center.lng);
       container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
     });
-    
+
     return container;
   }
 });
