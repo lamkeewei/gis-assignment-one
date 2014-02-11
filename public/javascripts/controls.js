@@ -82,13 +82,13 @@ var ToggleControl = L.Control.extend({
       });
     }
 
-    var add = L.DomUtil.create('li', 'disabled', container);
-    L.DomEvent.on(add, 'click', function(){
-      alert('Select data');
-    });
+    // var add = L.DomUtil.create('li', 'disabled', container);
+    // L.DomEvent.on(add, 'click', function(){
+    //   alert('Select data');
+    // });
 
-    add.setAttribute('id', 'add-layer');
-    add.innerHTML = '<i class="fa fa-plus"></i>  ADD LAYER'; 
+    // add.setAttribute('id', 'add-layer');
+    // add.innerHTML = '<i class="fa fa-plus"></i>  ADD LAYER'; 
 
     return container;
   }
@@ -112,13 +112,15 @@ var InfoWindow = L.Control.extend({
 });
 
 var ChloroControl = L.Control.extend({
-  initialize: function(options, layer, layerGrp, data, refreshOrder, overlays, toggleControl){
+  initialize: function(options, layer, layerGrp, data, refreshOrder, overlays, toggleControl, legendControl){
     this.layer = layer;
     this.layerGrp = layerGrp;
     this.data = data;
     this.overlays = overlays;
     this.refreshOrder = refreshOrder;
     this.toggleControl = toggleControl;
+    this.legendControl = legendControl;
+
     L.Util.setOptions(this, options);
   },
 
@@ -129,6 +131,7 @@ var ChloroControl = L.Control.extend({
     var refreshOrder = this.refreshOrder;
     var overlays = this.overlays;
     var toggleControl = this.toggleControl;
+    var legendControl = this.legendControl;
 
     var variables = this.data.features[0].properties;
     var container = L.DomUtil.create('div', 'chloroControl');
@@ -195,9 +198,13 @@ var ChloroControl = L.Control.extend({
         return d;
       });
 
+      var colorScheme = colorbrewer[colorPicker.value][classPicker.value];
+
+      legendControl.updateCensusLegend(colorScheme, targetData);
+
       var color = d3.scale.quantize()
                       .domain(targetData)
-                      .range(colorbrewer[colorPicker.value][classPicker.value]);
+                      .range(colorScheme);
 
       if(layerGrp.hasLayer(layer)){
         layer.setStyle(function(feature){
@@ -225,6 +232,8 @@ var ChloroControl = L.Control.extend({
       targetData = _.sortBy(targetData, function(d){
         return d;
       });
+
+      legendControl.updateCensusLegend(colorScheme, targetData);
 
       var color = d3.scale.quantize()
                       .domain(targetData)
@@ -255,6 +264,8 @@ var ChloroControl = L.Control.extend({
         return d;
       });
 
+      legendControl.updateCensusLegend(colorScheme, targetData);
+      
       var color = d3.scale.quantize()
                       .domain(targetData)
                       .range(colorScheme);
@@ -320,5 +331,133 @@ var NavControls = L.Control.extend({
     latLngViewer.innerHTML = 'Position: (' + center.lat + ', ' + center.lng + ')';
 
     return container;
+  }
+});
+
+var LegendControl = L.Control.extend({
+  initialize: function(options){
+    L.Util.setOptions(this, options);
+  },
+
+  onAdd: function(map){
+    var container = L.DomUtil.create('div', '');
+    container.setAttribute('id', 'legendControl');
+
+    var header = L.DomUtil.create('div', 'header', container);
+    header.innerHTML = 'Legend';
+
+    var tripsLegend = L.DomUtil.create('div', '', container);
+    tripsLegend.setAttribute('id', 'tripsLegend');
+    this.tripsLegend = tripsLegend;
+
+    var busLegend = L.DomUtil.create('div', '', container);
+    busLegend.setAttribute('id', 'busLegend');
+    this.busLegend = busLegend;
+
+    var tracksLegend = L.DomUtil.create('div', '', container);
+    tracksLegend.setAttribute('id', 'tracksLegend');
+    this.tracksLegend = tracksLegend;
+
+    var censusLegend = L.DomUtil.create('div', '', container);
+    censusLegend.setAttribute('id', 'censusLegend');
+    this.censusLegend = censusLegend;
+    return container;
+  },
+
+  initializeLegends: function(censusData){
+    var r = 15;
+
+    var tripsLegend = d3.select('#tripsLegend')
+          .append('svg')
+          .attr('height', r * 2 + 6);
+    
+    tripsLegend.append('circle')
+          .attr('r', r)
+          .attr('cx', r + 3)
+          .attr('cy', r + 3)
+          .attr('class', 'bikeInLegend');
+
+    tripsLegend.append('text')
+          .text('More Bikes In')
+          .attr('x', r * 2 + 10)
+          .attr('y', r + 8);
+
+    tripsLegend.append('circle')
+          .attr('r', r)
+          .attr('cx', 150)
+          .attr('cy', r + 3)
+          .attr('class', 'bikeOutLegend');
+
+    tripsLegend.append('text')
+          .text('More Bikes Out')
+          .attr('x', 158 + r)
+          .attr('y', r + 8);
+
+    var censusLegend = d3.select('#censusLegend')
+          .append('svg')
+          .attr('height', 30);
+
+    var colorScale = colorbrewer.GnBu[4];
+    var fullWidth = $('#censusLegend').width();
+    var width = fullWidth / colorScale.length;
+    censusLegend.selectAll('rect')
+          .data(colorScale)
+          .enter()
+          .append('rect')
+          .attr('width', width)
+          .attr('height', 10)
+          .attr('x', function(d, i){
+            return i * width;
+          })
+          .style('fill', function(d){
+            return d;
+          });
+
+    censusLegend.append('text')
+          .text(d3.min(censusData))
+          .attr('y', 25)
+          .attr('id', 'legendMinLabel');
+
+    var maxLabel = censusLegend.append('text')
+          .text(d3.max(censusData))
+          .attr('y', 25)
+          .attr('id', 'legendMaxLabel');
+
+    //Revisit to fix
+    maxLabel.attr('x', fullWidth - 30);
+  },
+
+  updateCensusLegend: function(colorScale, censusData){
+    var legend = d3.select('#censusLegend').select('svg');
+
+    var fullWidth = $('#censusLegend').width();
+    var width = fullWidth / colorScale.length;
+
+    var scale = legend.selectAll('rect')
+          .data(colorScale);
+
+    scale.style('fill', function(d){
+      return d;
+    })
+    .attr('width', width)
+    .attr('x', function(d, i){
+      return i * width;
+    });
+
+    scale.enter()
+      .append('rect')
+      .attr('width', width)
+      .attr('height', 10)
+      .attr('x', function(d, i){
+        return i * width;
+      })
+      .style('fill', function(d){
+        return d;
+      });
+
+    scale.exit().remove();
+
+    d3.select('#legendMinLabel').text(d3.min(censusData));
+    d3.select('#legendMaxLabel').text(d3.max(censusData));
   }
 });
