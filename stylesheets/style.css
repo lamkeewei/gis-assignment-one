@@ -117,6 +117,20 @@ path.line{
   fill: #df6342;
 }
 
+#tripsLegend .bikeInLegend{
+  fill: #2c826b;
+  stroke: #2c826b;
+  stroke-width: 3;
+  fill-opacity: .5;
+}
+
+#tripsLegend .bikeOutLegend{
+  stroke: #df6342;
+  fill: #df6342;
+  stroke-width: 3;
+  fill-opacity: .5;
+}
+
 #usageChart .axis{
   fill: none;
   stroke: black;
@@ -293,4 +307,19 @@ path.line{
 #zoomControls .zoomOut:hover{
   cursor: pointer;
   background-color: rgba(15,15,15,.3);
+}
+
+#legendControl {
+  padding: 10px 10px;
+  background-color: white;
+  z-index: 999;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  list-style-type: none;
+  width: 300px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3px;
+  font-size: 85%;
 }

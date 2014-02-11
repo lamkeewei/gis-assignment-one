@@ -197,258 +197,255 @@ var bindDataToChart = function(chart, id){
 }
 
 queue()
-    .defer(d3.json, 'tracks.geojson')
-    .defer(d3.json, 'bus_stations.geojson')
-    .defer(d3.json, 'stations.geojson')
-    .defer(d3.json, 'censustracts.geojson')
-    .await(function(err, tracks, bus, stations, census){
-      document.querySelector('#loadingOverlay').style.display = 'none';
-      var categories = _.map(tracks.features, function(d){
-        return d.properties.category;
+.defer(d3.json, 'tracks.geojson')
+.defer(d3.json, 'bus_stations.geojson')
+.defer(d3.json, 'stations.geojson')
+.defer(d3.json, 'censustracts.geojson')
+.await(function(err, tracks, bus, stations, census){
+  document.querySelector('#loadingOverlay').style.display = 'none';
+  var categories = _.map(tracks.features, function(d){
+    return d.properties.category;
+  });
+
+  categories = _.compact(_.uniq(categories));
+
+  var categoryColors = d3.scale
+      .category10()
+      .domain(categories);
+
+  var tracksLayer = L.geoJson(tracks, {
+    style: function(feature){ 
+      return {
+        color: categoryColors(feature.properties.category),
+        weight: 3,
+        opacity: .4
+      }
+    }
+  });
+
+  var stationsLayer = L.geoJson(bus, {
+    pointToLayer: function(feature, latLng){
+      var color = feature.properties.line;
+      color = color.toLowerCase();
+
+      var stationStyle = L.AwesomeMarkers.icon({
+        prefix: 'fa',
+        icon: 'ticket',
+        markerColor: color
       });
 
-      categories = _.compact(_.uniq(categories));
-
-      var categoryColors = d3.scale
-          .category10()
-          .domain(categories);
-
-      var tracksLayer = L.geoJson(tracks, {
-        style: function(feature){ 
-          return {
-            color: categoryColors(feature.properties.category),
-            weight: 3,
-            opacity: .4
-          }
-        }
+      var stationName = feature.properties.station.toLowerCase();
+      var fmtName = '';
+      stationName.split(' ').forEach(function(word, i){
+        fmtName += word.charAt(0).toUpperCase();
+        fmtName += word.substring(1) + ' ';
       });
 
-      var stationsLayer = L.geoJson(bus, {
-        pointToLayer: function(feature, latLng){
-          var color = feature.properties.line;
-          color = color.toLowerCase();
+      return L.marker(latLng, {icon: stationStyle}).bindPopup(fmtName.trim(), {
+        closeButton: false
+      });
+    }
+  });
 
-          var stationStyle = L.AwesomeMarkers.icon({
-            prefix: 'fa',
-            icon: 'ticket',
-            markerColor: color
-          });
+  var stationMarkers = L.markerClusterGroup({
+    // singleMarkerMode: true,
+    polygonOptions: {
+      color: '#0570b0',
+      weight: 2,
+      fillColor: '#a6bddb',
+      fillOpacity: 0.5
+    }
+  });
 
-          var stationName = feature.properties.station.toLowerCase();
-          var fmtName = '';
-          stationName.split(' ').forEach(function(word, i){
-            fmtName += word.charAt(0).toUpperCase();
-            fmtName += word.substring(1) + ' ';
-          });
+  stationMarkers.addLayer(stationsLayer);
 
-          return L.marker(latLng, {icon: stationStyle}).bindPopup(fmtName.trim(), {
-            closeButton: false
-          });
-        }
+  var initialData = _.map(census.features, function(d){
+    return d.properties['population_by_gender_age_10ct_totpop10'];
+  });
+
+  initialData = _.sortBy(initialData, function(d){
+    return d;
+  });
+
+  var color = d3.scale.quantize().
+        domain(initialData).
+        range(colorbrewer.GnBu[4]);
+
+  var censusLayer = L.geoJson(census, {
+    style: function(feature){
+      var population = feature.properties.population_by_gender_age_10ct_totpop10;
+
+      return {
+        fillColor: color(population),
+        color: 'grey',
+        fillOpacity: 0.5,
+        weight: 1
+      }; 
+    }
+  });
+
+  map.addControl(new InfoWindow({
+    position: 'topright'
+  }));
+
+  var chart = setupChart();
+  map.getContainer().querySelector('.infoWindow').style.display = 'none';
+
+  var tripsLayer = L.geoJson(stations, {
+    pointToLayer: function(feature, latLng){
+      var id = feature.properties.ID;
+      var data = _.filter(hourly_data, function(d){
+        return d.station_id == id;
       });
 
-      var stationMarkers = L.markerClusterGroup({
-        // singleMarkerMode: true,
-        polygonOptions: {
-          color: '#0570b0',
-          weight: 2,
-          fillColor: '#a6bddb',
-          fillOpacity: 0.5
-        }
-      });
+      var size = _.reduce(data, function(memo, val){
+        var trips = val.arrivals + val.departures;
+        return memo + trips;
+      }, 0);
 
-      stationMarkers.addLayer(stationsLayer);
+      var totalArrivals = _.reduce(data, function(memo, val){
+        return memo + val.arrivals;
+      }, 0);
 
-      var initialData = _.map(census.features, function(d){
-        return d.properties['population_by_gender_age_10ct_totpop10'];
-      });
+      var totalDepartures = _.reduce(data, function(memo, val){
+        return memo + val.departures;
+      }, 0);
 
-      initialData = _.sortBy(initialData, function(d){
-        return d;
-      });
+      
+      var color;
 
-      var color = d3.scale.quantize().
-            domain(initialData).
-            range(colorbrewer.GnBu[4]);
+      if(totalArrivals > totalDepartures) {
+        color = '#2c826b';
+      } else {
+        color = '#df6342';
+      }
 
-      var censusLayer = L.geoJson(census, {
-        style: function(feature){
-          var population = feature.properties.population_by_gender_age_10ct_totpop10;
-
-          return {
-            fillColor: color(population),
-            color: 'grey',
-            fillOpacity: 0.5,
-            weight: 1
-          }; 
-        }
-      });
-
-      map.addControl(new InfoWindow({
-        position: 'topright'
-      }));
-
-      var chart = setupChart();
-      map.getContainer().querySelector('.infoWindow').style.display = 'none';
-
-      var tripsLayer = L.geoJson(stations, {
-        pointToLayer: function(feature, latLng){
-          var id = feature.properties.ID;
-          var data = _.filter(hourly_data, function(d){
-            return d.station_id == id;
-          });
-
-          var size = _.reduce(data, function(memo, val){
-            var trips = val.arrivals + val.departures;
-            return memo + trips;
-          }, 0);
-
-          var totalArrivals = _.reduce(data, function(memo, val){
-            return memo + val.arrivals;
-          }, 0);
-
-          var totalDepartures = _.reduce(data, function(memo, val){
-            return memo + val.departures;
-          }, 0);
-
-          
-          var color;
-
-          if(totalArrivals > totalDepartures) {
-            color = '#2c826b';
-          } else {
-            color = '#df6342';
-          }
-
-          var showInfoWindow = function(e){
-            var marker = e.target;
-            var id = marker.feature.properties.ID;
-            marker.setStyle({
-              color: 'black',
-              weight: 4
-            });
-
-            var infoWindow = map.getContainer().querySelector('.infoWindow');
-            var header = map.getContainer().querySelector('.infoWindow h1');
-            header.innerHTML = marker.feature.properties.NAME;
-            infoWindow.style.display = 'block';
-            bindDataToChart(chart, id);
-          }
-
-          var hideInfoWindow = function(e){
-            var marker = e.target;
-            marker.setStyle({
-              color: color,
-              weight: 2
-            });
-
-            var infoWindow = map.getContainer().querySelector('.infoWindow');
-            infoWindow.style.display = 'none';
-          }
-
-          return L.circleMarker(latLng, {
-            radius: Math.sqrt(size) * 1.7,
-            fillColor: color,
-            fillOpacity: 0.55,
-            weight: 2,
-            color: color
-          }).on({
-            // mouseover: showInfoWindow,
-            // mouseout: hideInfoWindow
-          });
-        }
-      });
-
-      //Set existing layers here
-      var layers = L.layerGroup([tripsLayer]);
-
-      layers.addTo(map);
-
-      //Set overlay layers here
-      var overlays = {
-        "Trips Layer": tripsLayer,
-        "Bus Stations Locations": stationMarkers,
-        "Tracks Layer": tracksLayer,
-        "Census Layer": censusLayer
-      };
-
-      var toggleControl = new ToggleControl(layers, overlays, {
-        position: 'topleft'
-      });
-
-      map.addControl(toggleControl);
-
-      map.addControl(new ChloroControl({
-        position: 'topleft'
-      }, censusLayer, layers, census, refreshOrder, overlays, toggleControl));
-
-      var sortable = map.getContainer().querySelector('.sortable');
-      $(sortable).sortable({
-        items: ':not(.disabled)'
-      }).bind('sortupdate', function(e, ui){
-        refreshOrder(layers, overlays);
-      });
-
-      map.addControl(new DetailMap({
-        position: 'topright'
-      }));
-
-      map.addControl(new NavControls({
-        position: 'bottomleft'
-      }));
-
-      // L.control.pan({
-      //   position: 'bottomleft'
-      // }).addTo(map);
-
-      var minimap = L.mapbox.map('minimap', 'lamkeewei.h6p10hml', {
-        zoomControl: false,
-        doubleClickZoom: false,
-        scrollWheelZoom: false,
-        attributionControl: false,
-        zoomControl: false,
-        boxZoom: false,
-        touchZoom: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        dragging: false,
-        keyboard: false,
-        legendControl: false
-      }).setView([42.3546, -71.0915], 17);
-
-      var miniStations = L.geoJson(stations, {
-        pointToLayer: function(feature, latLng){          
-          var stationStyle = L.AwesomeMarkers.icon({
-            prefix: 'fa',
-            icon: 'home',
-            markerColor: 'cadetblue'
-          });
-
-          return L.marker(latLng, {icon: stationStyle});
-        }
-      });
-      minimap.addLayer(miniStations);
-
-      L.DomEvent.on(map, 'mousemove', function(e){
-        var center = e.latlng;
-        var container = map.getContainer().querySelector('#latLngViewer');
-        var lat = parseFloat(center.lat);
-
-        var lng = parseFloat(center.lng);
-
-        container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
-        minimap.setView(e.latlng, 17, {
-          pan: {animate: false}
+      var showInfoWindow = function(e){
+        var marker = e.target;
+        var id = marker.feature.properties.ID;
+        marker.setStyle({
+          color: 'black',
+          weight: 4
         });
-      });
-    });
 
-// d3.json('tracks.geojson', function(err, tracks){
-//   d3.json('bus_stations.geojson', function(err, bus){
-//     d3.json('stations.geojson', function(err, stations){
-//       d3.json('censustracts.geojson', function(err, census){
-        
-//       });
-//     });
-//   });
-// });
+        var infoWindow = map.getContainer().querySelector('.infoWindow');
+        var header = map.getContainer().querySelector('.infoWindow h1');
+        header.innerHTML = marker.feature.properties.NAME;
+        infoWindow.style.display = 'block';
+        bindDataToChart(chart, id);
+      }
+
+      var hideInfoWindow = function(e){
+        var marker = e.target;
+        marker.setStyle({
+          color: color,
+          weight: 2
+        });
+
+        var infoWindow = map.getContainer().querySelector('.infoWindow');
+        infoWindow.style.display = 'none';
+      }
+
+      return L.circleMarker(latLng, {
+        radius: Math.sqrt(size) * 1.7,
+        fillColor: color,
+        fillOpacity: 0.55,
+        weight: 2,
+        color: color
+      }).on({
+        // mouseover: showInfoWindow,
+        // mouseout: hideInfoWindow
+      });
+    }
+  });
+
+  //Set existing layers here
+  var layers = L.layerGroup([tripsLayer]);
+
+  layers.addTo(map);
+
+  //Set overlay layers here
+  var overlays = {
+    "Trips Layer": tripsLayer,
+    "Bus Stations Locations": stationMarkers,
+    "Tracks Layer": tracksLayer,
+    "Census Layer": censusLayer
+  };
+
+  var toggleControl = new ToggleControl(layers, overlays, {
+    position: 'topleft'
+  });
+
+  map.addControl(toggleControl);
+  
+  var legendControl = new LegendControl({
+    position: 'bottomright'
+  });
+
+  map.addControl(legendControl);
+  legendControl.initializeLegends(initialData);
+
+  map.addControl(new ChloroControl({
+    position: 'topleft'
+  }, censusLayer, layers, census, refreshOrder, overlays, toggleControl, legendControl));
+
+  var sortable = map.getContainer().querySelector('.sortable');
+  $(sortable).sortable({
+    items: ':not(.disabled)'
+  }).bind('sortupdate', function(e, ui){
+    refreshOrder(layers, overlays);
+  });
+
+  map.addControl(new DetailMap({
+    position: 'topright'
+  }));
+
+  map.addControl(new NavControls({
+    position: 'bottomleft'
+  }));
+
+  // L.control.pan({
+  //   position: 'bottomleft'
+  // }).addTo(map);
+
+  var minimap = L.mapbox.map('minimap', 'lamkeewei.h6p10hml', {
+    zoomControl: false,
+    doubleClickZoom: false,
+    scrollWheelZoom: false,
+    attributionControl: false,
+    zoomControl: false,
+    boxZoom: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    dragging: false,
+    keyboard: false,
+    legendControl: false
+  }).setView([42.3546, -71.0915], 17);
+
+  var miniStations = L.geoJson(stations, {
+    pointToLayer: function(feature, latLng){          
+      var stationStyle = L.AwesomeMarkers.icon({
+        prefix: 'fa',
+        icon: 'home',
+        markerColor: 'cadetblue'
+      });
+
+      return L.marker(latLng, {icon: stationStyle});
+    }
+  });
+  minimap.addLayer(miniStations);
+
+  L.DomEvent.on(map, 'mousemove', function(e){
+    var center = e.latlng;
+    var container = map.getContainer().querySelector('#latLngViewer');
+    var lat = parseFloat(center.lat);
+
+    var lng = parseFloat(center.lng);
+
+    container.innerHTML = 'Position: (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')';
+    minimap.setView(e.latlng, 17, {
+      pan: {animate: false}
+    });
+  });
+});
