@@ -323,3 +323,11 @@ path.line{
   border-radius: 3px;
   font-size: 85%;
 }
+
+#legendControl div {
+  margin-bottom: 10px;
+}
+
+#legendControl div:last-child{
+  margin-bottom: none;
+}
