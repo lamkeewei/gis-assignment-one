@@ -55,6 +55,11 @@ var ToggleControl = L.Control.extend({
           L.DomUtil.removeClass(this, 'active');
           if(layerName === 'Census Layer'){
             map.getContainer().querySelector('#chloro-control').style.display = 'none';
+            map.getContainer().querySelector('#censusLegend').style.display = 'none';
+          }
+
+          if(layerName === 'Trips Layer'){
+            map.getContainer().querySelector('#tripsLegend').style.display = 'none';
           }
         }else{
           L.DomUtil.addClass(this, 'active');
@@ -68,6 +73,11 @@ var ToggleControl = L.Control.extend({
           
           if(this.innerHTML === 'Census Layer'){
             map.getContainer().querySelector('#chloro-control').style.display = 'block';
+            map.getContainer().querySelector('#censusLegend').style.display = 'block';
+          }
+
+          if(layerName === 'Trips Layer'){
+            map.getContainer().querySelector('#tripsLegend').style.display = 'block';
           }
         }
       });
