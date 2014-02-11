@@ -404,6 +404,8 @@ queue()
     position: 'bottomleft'
   }));
 
+  map.getContainer().querySelector('#censusLegend').style.display = 'none';
+
   // L.control.pan({
   //   position: 'bottomleft'
   // }).addTo(map);
