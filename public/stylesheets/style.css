@@ -80,6 +80,10 @@ a {
   border-radius: 3px;
 }
 
+#info-title{
+  font-size: 80%;
+}
+
 #usageChart {
   height: 100%;
 }
