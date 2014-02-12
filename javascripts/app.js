@@ -292,7 +292,7 @@ queue()
   // }));
 
   var chart = setupChart();
-  // map.getContainer().querySelector('.infoWindow').style.display = 'none';
+  map.getContainer().querySelector('.infoWindow').style.display = 'none';
 
   var tripsLayer = L.geoJson(stations, {
     pointToLayer: function(feature, latLng){
@@ -361,6 +361,7 @@ queue()
         var marker = e.target;
         var id = marker.feature.properties.ID;
         var info = map.getContainer().querySelector('.infoWindow');
+        info.style.display = 'block';
         var header = map.getContainer().querySelector('.infoWindow h1');
         header.innerHTML = marker.feature.properties.NAME;
         info.style.display = 'block';
@@ -372,6 +373,9 @@ queue()
           minWidth: 250,
           maxHeight: 360,
           closeButton: false
+        }).on('popupclose', function(){
+          var info = map.getContainer().querySelector('.infoWindow');
+          info.style.display = 'none';
         }).openPopup();
       });
     }
