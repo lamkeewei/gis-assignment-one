@@ -369,7 +369,7 @@ queue()
         marker.bindPopup(html, {
           maxWidth: 250,
           minWidth: 250,
-          maxHeight: 355,
+          maxHeight: 370,
           closeButton: false
         }).openPopup();
       });
