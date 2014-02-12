@@ -31,7 +31,7 @@ var setupChart = function(){
   var height = $('#usageChart').height();
   var chart = d3.select('#usageChart').append('svg')
       .attr('width', width)
-      .attr('height', height - 40);
+      .attr('height', height);
 
    var legend = {
     x_start: width-70,
@@ -128,7 +128,7 @@ var bindDataToChart = function(chart, id){
 
   var y_scale = d3.scale.linear()
       .domain([min, max * 1.5])
-      .range([height - 80, 5]);
+      .range([height - 30, 5]);
 
   var line = d3.svg.line()
       .x(function(d, i){ 
@@ -173,6 +173,7 @@ var bindDataToChart = function(chart, id){
         .scale(y_scale)
         .orient("right")
         .ticks(5)
+
   .tickFormat(function(d){
       return (d == "0"? '': d);
   });
@@ -369,7 +370,7 @@ queue()
         marker.bindPopup(html, {
           maxWidth: 250,
           minWidth: 250,
-          maxHeight: 370,
+          maxHeight: 360,
           closeButton: false
         }).openPopup();
       });
