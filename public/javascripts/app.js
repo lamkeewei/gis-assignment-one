@@ -428,9 +428,9 @@ queue()
 
   map.getContainer().querySelector('#censusLegend').style.display = 'none';
 
-  // L.control.pan({
-  //   position: 'bottomleft'
-  // }).addTo(map);
+  L.control.pan({
+    position: 'bottomleft'
+  }).addTo(map);
 
   var minimap = L.mapbox.map('minimap', 'lamkeewei.h6p10hml', {
     zoomControl: false,
