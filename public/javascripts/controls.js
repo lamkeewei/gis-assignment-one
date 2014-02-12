@@ -82,7 +82,17 @@ var ToggleControl = L.Control.extend({
         }
 
         var active = $('.toggle.active');
-        if(active.length > 0){
+
+        var tripsOrCensus = false;
+
+        $('.toggle.active').each(function(i, d){
+          var key = d.innerHTML;
+          if(key === 'Trips Layer' || key === 'Census Layer'){
+            tripsOrCensus = true;
+          }
+        });
+
+        if(active.length > 0 && tripsOrCensus){
           map.getContainer().querySelector('#legendControl').style.display = 'block';
         } else {
           map.getContainer().querySelector('#legendControl').style.display = 'none';
