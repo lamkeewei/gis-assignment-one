@@ -372,7 +372,7 @@ queue()
           maxWidth: 250,
           minWidth: 250,
           maxHeight: 360,
-          closeButton: false
+          // closeButton: false
         }).on('popupclose', function(){
           var info = map.getContainer().querySelector('.infoWindow');
           info.style.display = 'none';
