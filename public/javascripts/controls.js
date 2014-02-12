@@ -124,12 +124,12 @@ var InfoWindow = L.Class.extend({
   onAdd: function(map){
     this._map = map;
 
-    this._container = L.DomUtil.create('div', 'infoWindow');
+    this._container = L.DomUtil.create('div', 'infoWindow leaflet-zoom-hide');
     var header = L.DomUtil.create('h1', '', this._container);
     header.innerHTML = 'Usage By Hour';
     header.setAttribute('id', 'info-title');
 
-    var chart = L.DomUtil.create('div', '', this._container);
+    var chart = L.DomUtil.create('div', 'leaflet-zoom-hide', this._container);
     chart.setAttribute('id', 'usageChart');
     
     map.getPanes().mapPane.appendChild(this._container);
